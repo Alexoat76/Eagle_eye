@@ -228,7 +228,7 @@ def get_user_choice_info() -> str:
 
 
 # Function to format the number in a concise way.
-def format_number(number: str) -> int:
+def format_number(number: str) -> str:
     """
     Format the number in a concise way (e.g., 1K for 1000, 1M for 1 million).
 
@@ -239,17 +239,28 @@ def format_number(number: str) -> int:
         str: The formatted number.
     """
     try:
-        # Convert the number to a float and multiply it by 1000 or 1 million depending on the suffix
-        num = float(number.replace(' ', '').rstrip('KkMm'))
+        # Define a mapping of suffixes to multipliers
+        suffix_multiplier = {'K': 1_000, 'M': 1_000_000, 'k': 1_000, 'm': 1_000_000}
 
-        multiplier = 1000 if number.lower().endswith('k') else 1_000_000
-        num *= multiplier  # Multiply the number by the multiplier
+        # Extract the last character as the suffix
+        suffix = number[-1]
 
-        num = int(num)  # Convert the number to an integer
+        # Determine the multiplier based on the suffix
+        multiplier = suffix_multiplier.get(suffix, 1)
+
+        # Convert the part of the number without the suffix to a float
+        num = float(number[:-1]) if suffix in suffix_multiplier else float(number)
+
+        # Multiply the number by the multiplier
+        num *= multiplier
+
+        # Convert the number to an integer
+        num = int(num)
 
         # Format the number with commas
         return f"{num:,}"
     except ValueError:
+        # If the conversion to float fails, return the original number
         return number
 
 
